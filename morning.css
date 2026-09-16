@@ -40,6 +40,25 @@ body {
     0 0 46px 12px rgba(255, 203, 116, 0.75),
     0 0 120px 40px rgba(255, 160, 90, 0.4);
   animation: sunRise 2.6s cubic-bezier(0.22, 0.8, 0.35, 1) 0.35s both;
+  pointer-events: auto;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.25s ease-out;
+}
+
+.sun.wiggle { animation: sunWiggle 0.45s ease; }
+.sun.burst { animation: sunBurst 1.2s ease-out; }
+
+@keyframes sunWiggle {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.18) rotate(8deg); }
+  60% { transform: scale(0.92) rotate(-6deg); }
+}
+
+@keyframes sunBurst {
+  0% { transform: scale(1); filter: brightness(1); }
+  40% { transform: scale(1.35); filter: brightness(1.6); box-shadow: 0 0 90px 30px rgba(255, 230, 140, 1), 0 0 220px 90px rgba(255, 180, 90, 0.9); }
+  100% { transform: scale(1); filter: brightness(1); }
 }
 
 @keyframes sunRise { from { transform: translateY(190px); } }
@@ -61,9 +80,43 @@ body {
 @keyframes raysFade { from { opacity: 0; } }
 @keyframes raysRotate { to { transform: rotate(360deg); } }
 
+/* ===== Cầu vồng bình minh hé sau màn dawn ===== */
+.rainbow {
+  position: absolute;
+  left: 50%;
+  bottom: 30vh;
+  width: 120vw;
+  height: 60vw;
+  transform: translateX(-50%);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  background: radial-gradient(circle at 50% 100%,
+    transparent 55.5%,
+    rgba(255, 133, 162, 0.2) 56% 57.6%,
+    rgba(255, 176, 111, 0.2) 58% 59.6%,
+    rgba(255, 228, 141, 0.18) 60% 61.6%,
+    rgba(157, 245, 166, 0.15) 62% 63.6%,
+    rgba(133, 196, 255, 0.14) 64% 65.4%,
+    transparent 66%);
+  -webkit-mask: linear-gradient(180deg, #000 62%, transparent 96%);
+  mask: linear-gradient(180deg, #000 62%, transparent 96%);
+  filter: blur(1.2px);
+  opacity: 0;
+  animation: rainbowIn 3s ease 2.4s forwards;
+}
+
+@keyframes rainbowIn { to { opacity: 1; } }
+
 .hill { position: absolute; border-radius: 50%; }
-.hill.one { width: 80vw; height: 34vh; left: -15vw; bottom: -16vh; background: #4d2740; }
-.hill.two { width: 65vw; height: 30vh; right: -18vw; bottom: -14vh; background: #5d3247; }
+.hill.one {
+  width: 80vw; height: 34vh; left: -15vw; bottom: -16vh; background: #4d2740;
+  transform: translate3d(calc(var(--px, 0px) * 0.45), calc(var(--py, 0px) * 0.25), 0);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.4, 1);
+}
+.hill.two {
+  width: 65vw; height: 30vh; right: -18vw; bottom: -14vh; background: #5d3247;
+  transform: translate3d(calc(var(--px, 0px) * -0.6), calc(var(--py, 0px) * 0.35), 0);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.4, 1);
+}
 
 .cloud {
   position: absolute;
@@ -87,9 +140,13 @@ body {
 .bird {
   position: absolute;
   top: var(--top, 15%);
-  width: 30px;
-  height: 14px;
+  width: 36px;
+  height: 20px;
   animation: birdFly var(--dur, 10s) linear forwards;
+  pointer-events: auto;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  z-index: 5;
 }
 
 .bird::before,
@@ -134,6 +191,25 @@ body {
 }
 
 .butterfly-hit:hover { filter: drop-shadow(0 0 9px rgba(255, 224, 160, 0.95)); }
+
+.butterfly-hit.opened .butterfly {
+  filter: drop-shadow(0 0 10px #ffe599) drop-shadow(0 0 18px rgba(255, 215, 0, 0.7));
+}
+
+.butterfly-hit.opened::after {
+  content: '✨';
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 13px;
+  animation: badgeGlow 2.5s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes badgeGlow {
+  from { transform: scale(0.9); opacity: 0.75; }
+  to { transform: scale(1.15); opacity: 1; }
+}
 
 .butterfly {
   width: 38px;
@@ -413,11 +489,14 @@ body {
   .card p { font-size: 28px; }
   .music-btn { width: 46px; height: 46px; }
   .cloud { filter: blur(12px); }
+  .rainbow { width: 160vw; height: 80vw; bottom: 32vh; }
 }
 
 /* ===== Giảm chuyển động (a11y) ===== */
 @media (prefers-reduced-motion: reduce) {
   .dawn { display: none; }
-  .sun, .sun-rays, .cloud, .bird, .bird::before, .bird::after,
-  .butterfly, .butterfly .wing, .card-sun, .music-btn.on .icon-on { animation: none; }
+  .sun, .sun.wiggle, .sun.burst, .sun-rays, .cloud, .bird, .bird::before, .bird::after,
+  .butterfly, .butterfly .wing, .butterfly-hit.opened::after, .card-sun, .music-btn.on .icon-on { animation: none; }
+  .rainbow { animation: none; opacity: 1; }
+  .hill.one, .hill.two { transform: none !important; }
 }

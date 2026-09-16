@@ -50,6 +50,16 @@ body.day   { background: linear-gradient(180deg, #10173a 0%, #26265c 55%, #5c408
   box-shadow: inset -34px 12px 0 0 #f7f0cf;
   filter: drop-shadow(0 0 30px rgba(247, 240, 207, 0.4));
   animation: float 7s ease-in-out infinite;
+  pointer-events: auto;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.moon.wiggle { animation: moonWiggle 0.5s ease; }
+
+@keyframes moonWiggle {
+  25% { transform: rotate(-9deg) scale(1.06); }
+  75% { transform: rotate(9deg) scale(1.06); }
 }
 
 @keyframes float {
@@ -69,6 +79,36 @@ body.day   { background: linear-gradient(180deg, #10173a 0%, #26265c 55%, #5c408
   background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.95));
   filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
   animation: shoot 1.3s ease-out forwards;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Đom đóm lượn lờ */
+.firefly {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #d9ffa8;
+  box-shadow: 0 0 9px 2px rgba(190, 255, 140, 0.85);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation:
+    fireflyFly var(--fd, 22s) ease-in-out var(--fdel, 0s) infinite alternate,
+    fireflyGlow var(--gd, 3.5s) ease-in-out infinite;
+}
+
+@keyframes fireflyFly {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(var(--x1, 4vw), var(--y1, -4vh)); }
+  50%  { transform: translate(var(--x2, -5vw), var(--y2, 5vh)); }
+  75%  { transform: translate(var(--x3, 3vw), var(--y3, 3vh)); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes fireflyGlow {
+  0%, 100% { opacity: 0; }
+  50%      { opacity: 0.95; }
 }
 
 @keyframes shoot {
@@ -104,6 +144,26 @@ body.day   { background: linear-gradient(180deg, #10173a 0%, #26265c 55%, #5c408
 
 .wish-hit:hover .wish-star { transform: scale(1.35) rotate(15deg); }
 .wish-hit:active .wish-star { transform: scale(0.85); }
+
+.wish-hit.opened .wish-star {
+  background: linear-gradient(135deg, #ffffff 0%, #ffe9a8 45%, #ffd166 100%);
+  filter: drop-shadow(0 0 12px rgba(255, 240, 180, 0.95)) drop-shadow(0 0 22px rgba(201, 184, 255, 0.8));
+}
+
+.wish-hit.opened::after {
+  content: '✨';
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 13px;
+  animation: badgeGlow 2.5s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes badgeGlow {
+  from { transform: scale(0.9); opacity: 0.75; }
+  to { transform: scale(1.15); opacity: 1; }
+}
 
 @keyframes pulse {
   0%, 100% { filter: drop-shadow(0 0 5px rgba(255, 230, 160, 0.6)); }
@@ -336,5 +396,7 @@ body.day   { background: linear-gradient(180deg, #10173a 0%, #26265c 55%, #5c408
 
 /* ===== Giảm chuyển động (a11y) ===== */
 @media (prefers-reduced-motion: reduce) {
-  .aurora, .moon, .wish-star, .card-star, .music-btn.on .icon-on { animation: none; }
+  .aurora, .moon, .wish-star, .wish-hit.opened::after, .card-star, .music-btn.on .icon-on { animation: none; }
+  .firefly { display: none; }
+  .moon.wiggle { animation: none; }
 }

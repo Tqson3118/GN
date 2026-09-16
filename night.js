@@ -118,12 +118,31 @@ const $ = (id) => document.getElementById(id);
   scene.add(dust);
 
   const clock = new THREE.Clock();
-  const mouse = { x: 0, y: 0 };
+  const look = { x: 0, y: 0 };
+  let usingTilt = false;
 
   addEventListener('mousemove', (e) => {
-    mouse.x = (e.clientX / innerWidth - 0.5) * 2;
-    mouse.y = (e.clientY / innerHeight - 0.5) * 2;
+    if (usingTilt) return;
+    look.x = (e.clientX / innerWidth - 0.5) * 2;
+    look.y = (e.clientY / innerHeight - 0.5) * 2;
   });
+
+  /* Nghiêng điện thoại để thiên hà nghiêng theo (xin quyền ở iOS khi chạm lần đầu) */
+  addEventListener('deviceorientation', (e) => {
+    if (e.gamma == null || e.beta == null) return;
+    usingTilt = true;
+    look.x = Math.max(-1, Math.min(1, e.gamma / 28));
+    look.y = Math.max(-1, Math.min(1, (e.beta - 42) / 28));
+  });
+
+  function askTiltPermission() {
+    try {
+      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission().catch(() => {});
+      }
+    } catch (e) { /* bỏ qua */ }
+  }
+  addEventListener('pointerdown', askTiltPermission, { once: true });
 
   addEventListener('resize', () => {
     camera.aspect = innerWidth / innerHeight;
@@ -131,33 +150,104 @@ const $ = (id) => document.getElementById(id);
     renderer.setSize(innerWidth, innerHeight);
   });
 
-  renderer.setAnimationLoop(() => {
+  /* Reduced-motion: vẽ 1 khung tĩnh, không xoay liên tục */
+  if (window.Magic && Magic.REDUCED) {
+    renderer.render(scene, camera);
+    return;
+  }
+
+  function renderFrame() {
     const delta = clock.getDelta();
     mat.uniforms.uTime.value = clock.elapsedTime;
     galaxy.rotation.y += delta * 0.05;
     dust.rotation.y -= delta * 0.006;
-    camera.position.x += (mouse.x * 0.6 - camera.position.x) * 0.03;
-    camera.position.y += ((3.4 - mouse.y * 0.5) - camera.position.y) * 0.03;
+    camera.position.x += (look.x * 0.6 - camera.position.x) * 0.03;
+    camera.position.y += ((3.4 - look.y * 0.5) - camera.position.y) * 0.03;
     camera.lookAt(0, 0.2, 0);
     renderer.render(scene, camera);
+  }
+
+  renderer.setAnimationLoop(renderFrame);
+
+  /* Tiết kiệm pin tối đa khi ẩn tab */
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      renderer.setAnimationLoop(null);
+    } else {
+      clock.getDelta();
+      renderer.setAnimationLoop(renderFrame);
+    }
   });
 })();
 
-/* ================= Sao băng thỉnh thoảng lướt qua ================= */
+/* ================= Sao băng thỉnh thoảng lướt qua - chạm để ước ================= */
 const sky = $('sky');
+let starTimer = null;
 
 function spawnShootingStar() {
+  if (window.Magic && Magic.REDUCED) return;
+  if (document.hidden) {
+    starTimer = setTimeout(spawnShootingStar, 3000);
+    return;
+  }
   const sh = document.createElement('div');
   sh.className = 'shooting-star';
+  sh.title = 'Chạm để ước';
   sh.style.left = rand(5, 65).toFixed(2) + '%';
   sh.style.top = rand(2, 35).toFixed(2) + '%';
   sh.style.setProperty('--dx', rand(18, 32).toFixed(1) + 'vw');
   sh.style.setProperty('--dy', rand(12, 22).toFixed(1) + 'vh');
+  sh.addEventListener('click', (e) => {
+    e.stopPropagation();
+    chime();
+    if (window.confetti) {
+      confetti({
+        shapes: ['star'],
+        colors: ['#ffe9a8', '#ffffff', '#c9b8ff'],
+        particleCount: 26,
+        spread: 60,
+        startVelocity: 28,
+        zIndex: 90,
+        disableForReducedMotion: true,
+        origin: { x: e.clientX / innerWidth, y: e.clientY / innerHeight },
+      });
+    }
+    if (window.Magic) Magic.toast('Đã ghi lại điều ước', 'fa-wand-magic-sparkles');
+    sh.remove();
+  });
   sky.appendChild(sh);
   setTimeout(() => sh.remove(), 1500);
-  setTimeout(spawnShootingStar, rand(2500, 7000));
+  starTimer = setTimeout(spawnShootingStar, rand(2800, 7000));
 }
-setTimeout(spawnShootingStar, 1200);
+starTimer = setTimeout(spawnShootingStar, 1200);
+
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && !starTimer) {
+    starTimer = setTimeout(spawnShootingStar, rand(1500, 3500));
+  }
+});
+
+/* ================= Đom đóm lượn lờ chân đồi ================= */
+(function initFireflies() {
+  if (window.Magic && Magic.REDUCED) return;
+  const n = matchMedia('(max-width: 600px)').matches ? 9 : 14;
+  for (let i = 0; i < n; i++) {
+    const f = document.createElement('div');
+    f.className = 'firefly';
+    f.style.left = rand(4, 96).toFixed(1) + '%';
+    f.style.top = rand(34, 94).toFixed(1) + '%';
+    f.style.setProperty('--x1', rand(-18, 18).toFixed(1) + 'vw');
+    f.style.setProperty('--y1', rand(-9, 9).toFixed(1) + 'vh');
+    f.style.setProperty('--x2', rand(-18, 18).toFixed(1) + 'vw');
+    f.style.setProperty('--y2', rand(-9, 9).toFixed(1) + 'vh');
+    f.style.setProperty('--x3', rand(-14, 14).toFixed(1) + 'vw');
+    f.style.setProperty('--y3', rand(-8, 8).toFixed(1) + 'vh');
+    f.style.setProperty('--fd', rand(16, 30).toFixed(1) + 's');
+    f.style.setProperty('--fdel', (-rand(0, 30)).toFixed(1) + 's');
+    f.style.setProperty('--gd', rand(2.6, 5).toFixed(1) + 's');
+    sky.appendChild(f);
+  }
+})();
 
 /* ================= Lời chào + nền theo giờ thực ================= */
 function greetingByHour(h) {
@@ -246,8 +336,14 @@ window.addEventListener('load', () => {
         { scale: 0, autoAlpha: 0 },
         { scale: 1, autoAlpha: 1, clearProps: 'transform,opacity,visibility', duration: 0.6, ease: 'back.out(2)' }, '-=0.7')
       .call(startPoemTyping);
+    setTimeout(() => {
+      const t = document.querySelector('.title');
+      if (t) t.classList.add('shimmer');
+    }, 3400);
   } else {
     titleEl.textContent = TITLE;
+    const t = document.querySelector('.title');
+    if (t) t.classList.add('shimmer');
     startPoemTyping();
   }
 });
@@ -275,7 +371,7 @@ wishes.forEach((w, idx) => {
   star.style.animationDelay = (idx * 0.4) + 's';
 
   hit.appendChild(star);
-  hit.addEventListener('click', () => openMessage(w.text));
+  hit.addEventListener('click', () => openWish(idx));
   sky.appendChild(hit);
   wishEls.push(hit);
 });
@@ -289,6 +385,35 @@ function applyStarPositions() {
 }
 applyStarPositions();
 mqMobile.addEventListener('change', applyStarPositions);
+
+if (window.Magic) {
+  Magic.registerWishes(wishes.length);
+  wishEls.forEach((el, i) => {
+    if (Magic.isWishFound(i)) el.classList.add('opened');
+  });
+}
+
+/* ================= Trăng - gõ 3 lần mở lời chúc bí mật ================= */
+const MOON_SECRET = 'Êk, đang đêm mà gõ trăng ba lần nè. Thôi thì... thưởng thêm Như Ý một giấc mơ thật ngọt nha.';
+
+const moonEl = document.querySelector('.moon');
+let moonTaps = 0;
+let moonTimer = null;
+
+if (moonEl) {
+  moonEl.addEventListener('click', () => {
+    moonEl.classList.remove('wiggle');
+    void moonEl.offsetWidth;
+    moonEl.classList.add('wiggle');
+    moonTaps++;
+    clearTimeout(moonTimer);
+    moonTimer = setTimeout(() => { moonTaps = 0; }, 1600);
+    if (moonTaps >= 3) {
+      moonTaps = 0;
+      openMessage(MOON_SECRET);
+    }
+  });
+}
 
 /* ================= Pháo sao vàng (canvas-confetti) ================= */
 function fireStarConfetti() {
@@ -307,6 +432,18 @@ function fireStarConfetti() {
 
 /* ================= Overlay lời chúc ================= */
 const overlay = $('overlay');
+
+const SECRET_MESSAGE = 'Như Ý đã chạm đủ 6 ngôi sao ước rồi đó. Điều ước số 7 là bí mật: mong mỗi đêm Ý đều ngủ thật sâu, thật ngoan và mơ thấy những điều đẹp nhất.';
+
+function openWish(idx) {
+  if (window.Magic) Magic.wishFound(idx, wishes.length);
+  if (wishEls[idx]) wishEls[idx].classList.add('opened');
+  openMessage(wishes[idx].text);
+}
+
+window.addEventListener('magic:all-found', () => {
+  openMessage(SECRET_MESSAGE);
+});
 
 function openMessage(text) {
   chime();
@@ -345,8 +482,8 @@ $('closeMessage').addEventListener('click', closeMessage);
 overlay.addEventListener('click', (e) => { if (e.target === overlay) closeMessage(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMessage(); });
 
-/* ================= Nhạc nền ru ngủ (Web Audio, không cần file) ================= */
-const NOTE = { C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.0, C6: 1046.5 };
+/* ================= Nhạc nền hộp nhạc: 3 bài, chu kỳ bật/tắt có fade ================= */
+const NOTE = { G4: 392.00, A4: 440.00, B4: 493.88, C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.0, B5: 987.77, C6: 1046.5 };
 
 const MELODY = [
   ['C5',1],['C5',1],['G5',1],['G5',1],['A5',1],['A5',1],['G5',2],
@@ -357,10 +494,37 @@ const MELODY = [
   ['F5',1],['F5',1],['E5',1],['E5',1],['D5',1],['D5',1],['C5',2],
 ];
 
+const MELODY_BRAHMS = [
+  ['E5',1],['E5',1],['G5',2],
+  ['E5',1],['E5',1],['G5',2],
+  ['E5',1],['E5',1],['A5',2],['G5',2],
+  ['F5',1],['F5',1],['E5',1],['D5',1],['C5',2],
+  ['G5',1],['G5',1],['F5',1],['E5',1],['D5',2],
+  ['E5',1],['E5',1],['D5',1],['C5',1],['C5',4],
+];
+
+const MELODY_CANON = [
+  ['E5',2],['D5',2],['C5',2],['B4',2],
+  ['A4',2],['G4',2],['A4',2],['B4',2],
+  ['C5',1],['E5',1],['G5',1],['F5',1],['E5',1],['C5',1],['E5',1],['D5',1],
+  ['C5',1],['A4',1],['C5',1],['B4',1],['A4',1],['G4',1],['A4',1],['B4',1],
+  ['C5',4],
+];
+
+const SONGS = [
+  { name: 'Twinkle Twinkle Little Star', beat: 0.55, melody: MELODY },
+  { name: 'Brahms Lullaby', beat: 0.5, melody: MELODY_BRAHMS },
+  { name: 'Canon in D', beat: 0.52, melody: MELODY_CANON },
+];
+
 let audioCtx = null;
 let master = null;
-let loopTimer = null;
-let musicOn = false;
+let chimeBus = null;
+let schedTimer = null;
+let songIdx = 0;
+let songPos = 0;
+let nextNoteTime = 0;
+let musicState = 0;
 
 function initAudio() {
   const AC = window.AudioContext || window.webkitAudioContext;
@@ -368,9 +532,12 @@ function initAudio() {
   master = audioCtx.createGain();
   master.gain.value = 0.35;
   master.connect(audioCtx.destination);
+  chimeBus = audioCtx.createGain();
+  chimeBus.gain.value = 0.3;
+  chimeBus.connect(audioCtx.destination);
 }
 
-function playNote(freq, time) {
+function playNote(freq, time, dur, dest) {
   const o1 = audioCtx.createOscillator();
   const o2 = audioCtx.createOscillator();
   const g = audioCtx.createGain();
@@ -383,50 +550,82 @@ function playNote(freq, time) {
   o1.connect(g);
   o2.connect(g2);
   g2.connect(g);
-  g.connect(master);
+  g.connect(dest || master);
+  const hold = Math.max(0.5, Math.min(1.6, dur || 1.2));
   g.gain.setValueAtTime(0.0001, time);
   g.gain.exponentialRampToValueAtTime(0.5, time + 0.03);
-  g.gain.exponentialRampToValueAtTime(0.0001, time + 1.6);
+  g.gain.exponentialRampToValueAtTime(0.0001, time + hold);
   o1.start(time);
   o2.start(time);
-  o1.stop(time + 1.8);
-  o2.stop(time + 1.8);
+  o1.stop(time + hold + 0.2);
+  o2.stop(time + hold + 0.2);
 }
 
-function scheduleLoop() {
-  const beat = 0.55;
-  let t = audioCtx.currentTime + 0.15;
-  for (const [note, dur] of MELODY) {
-    playNote(NOTE[note], t);
-    t += dur * beat;
+/* Scheduler lookahead: đặt lịch trước 1.5s để không bị hụt tiếng khi tab nền */
+function scheduleAhead() {
+  const song = SONGS[songIdx];
+  while (nextNoteTime < audioCtx.currentTime + 1.5) {
+    const [note, dur] = song.melody[songPos];
+    playNote(NOTE[note], nextNoteTime, dur * song.beat * 2.2);
+    nextNoteTime += dur * song.beat;
+    songPos = (songPos + 1) % song.melody.length;
   }
-  loopTimer = setTimeout(scheduleLoop, (t - audioCtx.currentTime - 0.1) * 1000);
+}
+
+function startSong(i) {
+  stopSong(true);
+  songIdx = i;
+  songPos = 0;
+  nextNoteTime = audioCtx.currentTime + 0.25;
+  const t = audioCtx.currentTime;
+  master.gain.cancelScheduledValues(t);
+  master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), t);
+  master.gain.exponentialRampToValueAtTime(0.35, t + 0.9);
+  scheduleAhead();
+  schedTimer = setInterval(scheduleAhead, 250);
+}
+
+function stopSong(keepGain) {
+  if (schedTimer) {
+    clearInterval(schedTimer);
+    schedTimer = null;
+  }
+  if (!keepGain && audioCtx) {
+    const t = audioCtx.currentTime;
+    master.gain.cancelScheduledValues(t);
+    master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), t);
+    master.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+  }
 }
 
 function chime() {
   try {
     if (!audioCtx) initAudio();
-    if (audioCtx.state !== 'running') return;
-    const t = audioCtx.currentTime;
-    playNote(NOTE.E5, t);
-    playNote(NOTE.A5, t + 0.14);
-    playNote(NOTE.C6, t + 0.28);
+    const play = () => {
+      const t = audioCtx.currentTime;
+      playNote(NOTE.E5, t, 0.9, chimeBus);
+      playNote(NOTE.A5, t + 0.14, 0.9, chimeBus);
+      playNote(NOTE.C6, t + 0.28, 1.1, chimeBus);
+    };
+    if (audioCtx.state !== 'running') audioCtx.resume().then(play).catch(() => {});
+    else play();
   } catch (e) { /* im lặng */ }
 }
 
 const musicBtn = $('musicBtn');
 
+/* Bấm lần lượt: tắt → bài 1 → bài 2 → bài 3 → tắt */
 function toggleMusic() {
   if (!audioCtx) initAudio();
-  musicOn = !musicOn;
-  if (musicOn) {
+  musicState = (musicState + 1) % (SONGS.length + 1);
+  if (musicState > 0) {
     audioCtx.resume();
-    scheduleLoop();
+    startSong(musicState - 1);
     musicBtn.classList.add('on');
     musicBtn.setAttribute('aria-label', 'Tắt nhạc nền');
+    if (window.Magic) Magic.toast(SONGS[musicState - 1].name, 'fa-music');
   } else {
-    clearTimeout(loopTimer);
-    audioCtx.suspend();
+    stopSong();
     musicBtn.classList.remove('on');
     musicBtn.setAttribute('aria-label', 'Bật nhạc nền');
   }

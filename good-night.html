@@ -1,14 +1,40 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-magic="night">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0a0f2c">
   <title>Chúc Như Ý ngủ ngon</title>
+  <script>
+    (function () {
+      try {
+        if (new URLSearchParams(location.search).has('stay')) return;
+        if (sessionStorage.getItem('gn-routed')) return;
+        var h = new Date().getHours();
+        var night = h >= 19 || h < 5;
+        var page = document.documentElement.getAttribute('data-magic');
+        if ((page === 'morning' && night) || (page === 'night' && !night)) {
+          sessionStorage.setItem('gn-routed', '1');
+          location.replace(page === 'morning' ? 'good-night.html' : 'index.html');
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <meta property="og:title" content="Ngủ ngon nhé, Như Ý">
+  <meta property="og:description" content="Thiên hà, sao băng và 6 ngôi sao ước gửi riêng cho Như Ý">
+  <meta property="og:image" content="og-night.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon-night.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha384-PPIZEGYM1v8zp5Py7UjFb79S58UeqCL9pYVnVPURKEqvioPROaVAJKKLzvH2rDnI" crossorigin="anonymous">
+  <link rel="stylesheet" href="magic.css">
   <link rel="stylesheet" href="night.css">
 </head>
 <body>
@@ -42,14 +68,19 @@
     </div>
   </div>
 
+  <a href="index.html?stay=1" class="mode-switch-btn" aria-label="Xem trang chào buổi sáng" title="Xem trang chào buổi sáng">
+    <i class="fa-solid fa-sun"></i>
+  </a>
+
   <button class="music-btn" id="musicBtn" aria-label="Bật nhạc nền">
     <i class="fa-solid fa-music icon-on"></i>
     <i class="fa-solid fa-volume-xmark icon-off"></i>
   </button>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" integrity="sha384-sPwMflxqfAN+Q5mvlkLmHiX3PORGbZSXHiSGPTXT9VHCD/AB+b+r+vJWsqprv+7k" crossorigin="anonymous"></script>
+  <script src="magic.js"></script>
   <script src="night.js"></script>
 </body>
 </html>
