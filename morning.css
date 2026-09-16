@@ -1,0 +1,423 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+/* Nền bình minh: chàm → tím hồng → cam → vàng nắng */
+body {
+  font-family: 'Be Vietnam Pro', 'Segoe UI', Tahoma, sans-serif;
+  overflow: hidden;
+  color: #4a2418;
+  background: linear-gradient(180deg, #2b2350 0%, #5c3a78 20%, #a04d74 42%, #e5795f 62%, #ffab5e 80%, #ffd88f 100%);
+}
+
+/* ===== Màn đêm hé dần khi mở trang ===== */
+.dawn {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(180deg, #0a0e2a 0%, #1c1a44 55%, #33255c 100%);
+  animation: dawnFade 3.6s ease 0.25s forwards;
+}
+
+@keyframes dawnFade { to { opacity: 0; visibility: hidden; } }
+
+/* ===== Bụi nắng bay lên (canvas) ===== */
+#dust { position: fixed; inset: 0; z-index: 4; pointer-events: none; }
+
+/* ===== Bầu trời bình minh ===== */
+.sky { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+
+.sun {
+  position: absolute;
+  left: 18%;
+  bottom: 28vh;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 38%, #fff9e3 0%, #ffe49a 45%, #ffc266 75%, #ff9d4d 100%);
+  box-shadow:
+    0 0 46px 12px rgba(255, 203, 116, 0.75),
+    0 0 120px 40px rgba(255, 160, 90, 0.4);
+  animation: sunRise 2.6s cubic-bezier(0.22, 0.8, 0.35, 1) 0.35s both;
+}
+
+@keyframes sunRise { from { transform: translateY(190px); } }
+
+.sun-rays {
+  position: absolute;
+  left: 18%;
+  bottom: calc(28vh - 112px);
+  margin-left: -112px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 214, 140, 0.42) 0deg 4deg, transparent 4deg 14deg);
+  -webkit-mask: radial-gradient(circle, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.45) 48%, transparent 68%);
+  mask: radial-gradient(circle, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.45) 48%, transparent 68%);
+  animation: raysFade 1.6s ease 1.5s both, raysRotate 90s linear infinite;
+}
+
+@keyframes raysFade { from { opacity: 0; } }
+@keyframes raysRotate { to { transform: rotate(360deg); } }
+
+.hill { position: absolute; border-radius: 50%; }
+.hill.one { width: 80vw; height: 34vh; left: -15vw; bottom: -16vh; background: #4d2740; }
+.hill.two { width: 65vw; height: 30vh; right: -18vw; bottom: -14vh; background: #5d3247; }
+
+.cloud {
+  position: absolute;
+  height: 46px;
+  border-radius: 999px;
+  background: rgba(255, 238, 222, 0.55);
+  filter: blur(16px);
+  animation: cloudDrift linear infinite;
+}
+
+.cloud.c1 { top: 14%; width: 240px; animation-duration: 95s; }
+.cloud.c2 { top: 24%; width: 170px; opacity: 0.7; animation-duration: 70s; animation-delay: -30s; }
+.cloud.c3 { top: 8%; width: 200px; opacity: 0.5; animation-duration: 120s; animation-delay: -70s; }
+
+@keyframes cloudDrift {
+  from { transform: translateX(-25vw); }
+  to   { transform: translateX(130vw); }
+}
+
+/* ===== Chim bay ===== */
+.bird {
+  position: absolute;
+  top: var(--top, 15%);
+  width: 30px;
+  height: 14px;
+  animation: birdFly var(--dur, 10s) linear forwards;
+}
+
+.bird::before,
+.bird::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 15px;
+  height: 14px;
+  border: 2.5px solid rgba(74, 36, 44, 0.85);
+  border-color: rgba(74, 36, 44, 0.85) transparent transparent transparent;
+  border-radius: 50%;
+}
+
+.bird::before { left: 0; animation: wingFlap 0.5s ease-in-out infinite alternate; }
+.bird::after { right: 0; animation: wingFlap 0.5s ease-in-out 0.25s infinite alternate; }
+
+@keyframes wingFlap {
+  from { transform: rotate(14deg) scaleY(1); }
+  to   { transform: rotate(-6deg) scaleY(0.45); }
+}
+
+@keyframes birdFly {
+  from { transform: translateX(-12vw) translateY(0); }
+  50%  { transform: translateX(50vw) translateY(-2vh); }
+  to   { transform: translateX(112vw) translateY(0.5vh); }
+}
+
+/* ===== Bướm chúa - click nhận lời chúc ===== */
+.butterfly-hit {
+  position: absolute;
+  width: 62px;
+  height: 62px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.butterfly-hit:hover { filter: drop-shadow(0 0 9px rgba(255, 224, 160, 0.95)); }
+
+.butterfly {
+  width: 38px;
+  height: 34px;
+  position: relative;
+  perspective: 140px;
+  animation: bob var(--bobd, 5s) ease-in-out infinite alternate;
+}
+
+.butterfly .wing {
+  position: absolute;
+  top: 1px;
+  width: 19px;
+  height: 30px;
+  border-radius: 62% 38% 45% 55% / 75% 70% 30% 25%;
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.butterfly .wing.left {
+  left: 1px;
+  transform-origin: right center;
+  background: linear-gradient(135deg, var(--wc1), var(--wc2));
+  animation: flapL 0.46s ease-in-out infinite alternate;
+}
+
+.butterfly .wing.right {
+  right: 1px;
+  transform-origin: left center;
+  background: linear-gradient(225deg, var(--wc1), var(--wc2));
+  animation: flapR 0.46s ease-in-out infinite alternate;
+}
+
+.butterfly .body {
+  position: absolute;
+  left: 50%;
+  top: 3px;
+  width: 4px;
+  height: 26px;
+  margin-left: -2px;
+  border-radius: 4px;
+  background: #5a3a2a;
+}
+
+@keyframes flapL { from { transform: rotateY(12deg); } to { transform: rotateY(72deg); } }
+@keyframes flapR { from { transform: rotateY(-12deg); } to { transform: rotateY(-72deg); } }
+
+@keyframes bob {
+  from { transform: translateY(-7px) rotate(-5deg); }
+  to   { transform: translateY(7px) rotate(6deg); }
+}
+
+/* ===== Nội dung chính ===== */
+.content {
+  position: relative;
+  z-index: 5;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: env(safe-area-inset-top) 24px env(safe-area-inset-bottom);
+  pointer-events: none;
+}
+
+/* Lớp tối nhẹ sau chữ - chống trùng màu nền bình minh */
+.content::before {
+  content: '';
+  position: absolute;
+  inset: -10% -16%;
+  z-index: -1;
+  background: radial-gradient(ellipse 54% 46% at 50% 48%, rgba(80, 28, 52, 0.4), rgba(80, 28, 52, 0.2) 56%, transparent 78%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.time-greeting {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #ffdcae;
+  text-shadow: 0 1px 10px rgba(90, 30, 50, 0.6);
+  margin-bottom: 20px;
+}
+
+.time-greeting i { font-size: 15px; opacity: 0.95; }
+
+.title {
+  font-family: 'Great Vibes', 'Dancing Script', cursive;
+  font-weight: 400;
+  font-size: clamp(56px, 10vw, 118px);
+  line-height: 1.2;
+  min-height: 1.2em;
+  max-width: 92vw;
+  color: #fff7e8;
+  text-shadow:
+    0 0 34px rgba(255, 170, 90, 0.5),
+    0 3px 22px rgba(90, 30, 50, 0.6);
+  perspective: 700px;
+}
+
+.title .char { display: inline-block; will-change: transform, opacity; }
+
+.cursor {
+  display: inline-block;
+  width: 3px;
+  height: 0.72em;
+  margin-left: 6px;
+  border-radius: 2px;
+  background: #ffdf9e;
+  vertical-align: baseline;
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ===== Bài thơ buổi sáng ===== */
+.poem {
+  margin-top: 8px;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(17px, 2.6vw, 24px);
+  line-height: 1.75;
+  color: #fff1da;
+  text-shadow: 0 2px 16px rgba(80, 25, 45, 0.65);
+}
+
+.poem-line { display: block; min-height: 1.75em; }
+
+.hint {
+  margin-top: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffe9d2;
+  text-shadow: 0 1px 10px rgba(90, 30, 50, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hint i { color: #ffe9a8; }
+
+/* ===== Overlay lời chúc ===== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  padding-top: calc(24px + env(safe-area-inset-top));
+  background: rgba(70, 30, 55, 0.55);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.card {
+  max-width: 500px;
+  width: 100%;
+  padding: 44px 36px;
+  text-align: center;
+  background: linear-gradient(165deg, #fff8ec, #ffe7cb);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(90, 30, 50, 0.45);
+}
+
+.card-sun {
+  width: 34px;
+  height: 34px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 38%, #fff4c9 0%, #ffcf6e 60%, #ff9d4d 100%);
+  box-shadow: 0 0 22px rgba(255, 190, 100, 0.85);
+  animation: sunPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes sunPulse {
+  0%, 100% { box-shadow: 0 0 16px rgba(255, 190, 100, 0.7); transform: scale(1); }
+  50%      { box-shadow: 0 0 30px rgba(255, 190, 100, 1); transform: scale(1.12); }
+}
+
+.card p {
+  font-family: 'Great Vibes', 'Dancing Script', cursive;
+  font-size: 36px;
+  line-height: 1.45;
+  min-height: 3.6em;
+  color: #8a4b2a;
+}
+
+.close-btn {
+  margin-top: 26px;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffb26b, #ff8e4d);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.close-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 150, 80, 0.45); }
+
+/* ===== Nút nhạc ===== */
+.music-btn {
+  position: fixed;
+  right: calc(22px + env(safe-area-inset-right));
+  bottom: calc(22px + env(safe-area-inset-bottom));
+  z-index: 60;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+  background: rgba(255, 240, 220, 0.28);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.music-btn:hover { transform: scale(1.1); }
+
+.music-btn.on {
+  border-color: #ffe9a8;
+  box-shadow: 0 0 18px rgba(255, 210, 130, 0.6);
+}
+
+.music-btn i { font-size: 18px; }
+
+.music-btn .icon-on { display: none; }
+.music-btn.on .icon-on { display: block; animation: musicBeat 1.6s ease-in-out infinite; }
+.music-btn.on .icon-off { display: none; }
+
+@keyframes musicBeat {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50%      { transform: scale(1.18) rotate(-10deg); }
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 600px) {
+  .sun { width: 64px; height: 64px; bottom: 30vh; }
+  .sun-rays { width: 220px; height: 220px; bottom: calc(30vh - 78px); margin-left: -78px; }
+  .title { font-size: clamp(44px, 12vw, 68px); }
+  .poem { font-size: clamp(15.5px, 4.2vw, 19px); line-height: 1.7; }
+  .poem-line { min-height: 1.7em; }
+  .hint { font-size: 12.5px; margin-top: 18px; }
+  .time-greeting { font-size: 11px; letter-spacing: 2px; gap: 7px; margin-bottom: 14px; }
+  .butterfly-hit { width: 66px; height: 66px; }
+  .card { padding: 30px 20px; border-radius: 20px; }
+  .card p { font-size: 28px; }
+  .music-btn { width: 46px; height: 46px; }
+  .cloud { filter: blur(12px); }
+}
+
+/* ===== Giảm chuyển động (a11y) ===== */
+@media (prefers-reduced-motion: reduce) {
+  .dawn { display: none; }
+  .sun, .sun-rays, .cloud, .bird, .bird::before, .bird::after,
+  .butterfly, .butterfly .wing, .card-sun, .music-btn.on .icon-on { animation: none; }
+}
