@@ -1,90 +1,1592 @@
 <!DOCTYPE html>
-<html lang="vi" data-magic="morning">
+<html lang="vi" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#a04d74">
-  <title>Chào buổi sáng - dành riêng cho Như Ý</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dạng 3: Hệ Phương Trình Bậc Nhất Hai Ẩn - Bài Toán Thực Tế</title>
+  
+  <!-- MathJax Configuration & Script -->
   <script>
-    (function () {
-      try {
-        if (new URLSearchParams(location.search).has('stay')) return;
-        if (sessionStorage.getItem('gn-routed')) return;
-        var h = new Date().getHours();
-        var night = h >= 19 || h < 5;
-        var page = document.documentElement.getAttribute('data-magic');
-        if ((page === 'morning' && night) || (page === 'night' && !night)) {
-          sessionStorage.setItem('gn-routed', '1');
-          location.replace(page === 'morning' ? 'good-night.html' : 'index.html');
-        }
-      } catch (e) {}
-    })();
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    };
   </script>
-  <meta property="og:title" content="Chào buổi sáng, Như Ý">
-  <meta property="og:description" content="Bướm chúa và 6 lời chúc ẩn đang chờ Như Ý khám phá">
-  <meta property="og:image" content="og-morning.png">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" type="image/png" sizes="64x64" href="favicon-morning.png">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="manifest" href="manifest.json">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha384-PPIZEGYM1v8zp5Py7UjFb79S58UeqCL9pYVnVPURKEqvioPROaVAJKKLzvH2rDnI" crossorigin="anonymous">
-  <link rel="stylesheet" href="magic.css">
-  <link rel="stylesheet" href="morning.css">
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    /* ==========================================================================
+       CSS VARIABLES & THEMES (TRẮNG ĐEN - MONOCHROME HIGH CONTRAST)
+       ========================================================================== */
+    :root {
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #FAFAFA;
+      --bg-tertiary: #F4F4F5;
+      --bg-card: #FFFFFF;
+      --border-color: #18181B;
+      --border-light: #E4E4E7;
+      --text-primary: #09090B;
+      --text-secondary: #52525B;
+      --text-muted: #71717A;
+      --accent: #000000;
+      --accent-contrast: #FFFFFF;
+      --badge-bg: #18181B;
+      --badge-text: #FFFFFF;
+      --callout-bg: #F4F4F5;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #09090B;
+      --bg-secondary: #121214;
+      --bg-tertiary: #1C1C1F;
+      --bg-card: #121214;
+      --border-color: #FAFAFA;
+      --border-light: #2E2E32;
+      --text-primary: #FAFAFA;
+      --text-secondary: #A1A1AA;
+      --text-muted: #71717A;
+      --accent: #FFFFFF;
+      --accent-contrast: #09090B;
+      --badge-bg: #FFFFFF;
+      --badge-text: #09090B;
+      --callout-bg: #18181B;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.5);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.6);
+      --shadow-lg: 0 10px 15px rgba(0,0,0,0.8);
+    }
+
+    /* ==========================================================================
+       RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Container */
+    .app-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 1.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ==========================================================================
+       HEADER & NAVIGATION BAR
+       ========================================================================== */
+    header {
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-badge {
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 700;
+      border: 1px solid var(--border-color);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .btn-action {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .btn-action:hover {
+      background: var(--accent);
+      color: var(--accent-contrast);
+    }
+
+    /* 5-Page Tab Navigation */
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+      scrollbar-width: thin;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 160px;
+      background: var(--bg-tertiary);
+      border: 1.5px solid var(--border-light);
+      border-radius: 6px;
+      padding: 0.65rem 0.75rem;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-family: inherit;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .tab-btn.active {
+      background: var(--bg-primary);
+      border-color: var(--border-color);
+      color: var(--text-primary);
+      box-shadow: 2px 2px 0 var(--border-color);
+    }
+
+    .tab-number {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+      margin-bottom: 0.15rem;
+    }
+
+    .tab-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+
+    /* ==========================================================================
+       PAGE / SLIDE CONTENT CONTAINERS
+       ========================================================================== */
+    .page-content {
+      display: none;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .page-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Breadcrumbs / Page Headline */
+    .page-headline {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1.5px dashed var(--border-light);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .page-headline h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .page-headline .tagline {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Grid & Card Layouts */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 820px) {
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.25rem;
+      box-shadow: 2px 2px 0 var(--border-color);
+      margin-bottom: 1.25rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.5rem;
+    }
+
+    .card-badge {
+      font-size: 0.7rem;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       MINI-QUIZ INTERACTIVE COMPONENT
+       ========================================================================== */
+    .quiz-box {
+      background: var(--bg-tertiary);
+      border: 1.5px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 3px 3px 0 var(--border-color);
+    }
+
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .quiz-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .quiz-prompt {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.85rem;
+      color: var(--text-primary);
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .quiz-opt {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-light);
+      padding: 0.65rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-family: inherit;
+      color: var(--text-primary);
+    }
+
+    .quiz-opt:hover {
+      border-color: var(--border-color);
+      background: var(--bg-secondary);
+    }
+
+    .quiz-opt.correct {
+      border-color: var(--border-color);
+      background: var(--accent);
+      color: var(--accent-contrast);
+      font-weight: 700;
+    }
+
+    .quiz-opt.incorrect {
+      border-color: var(--border-color);
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .quiz-feedback {
+      display: none;
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: 1.5px solid var(--border-color);
+      background: var(--bg-card);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .quiz-feedback.show {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    /* ==========================================================================
+       TEACHER'S TIP & COMMON TRAPS (TOGGLEABLE CALLOUT)
+       ========================================================================== */
+    .tip-callout {
+      border: 1.5px solid var(--border-color);
+      background: var(--callout-bg);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .tip-toggle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .tip-label {
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tip-body {
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px dashed var(--border-light);
+      font-size: 0.92rem;
+      color: var(--text-primary);
+    }
+
+    .tip-body ul {
+      padding-left: 1.25rem;
+      margin-top: 0.35rem;
+    }
+
+    .tip-body li {
+      margin-bottom: 0.35rem;
+    }
+
+    /* ==========================================================================
+       BOARD WRITING / STEP-BY-STEP SOLUTION (MÔ PHỎNG VIẾT BẢNG)
+       ========================================================================== */
+    .board-container {
+      border: 2px solid var(--border-color);
+      background: var(--bg-card);
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 4px 4px 0 var(--border-color);
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .board-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .board-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .board-controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .step-box {
+      border: 1.5px solid var(--border-light);
+      border-radius: 6px;
+      margin-bottom: 0.85rem;
+      overflow: hidden;
+      background: var(--bg-primary);
+    }
+
+    .step-box.active {
+      border-color: var(--border-color);
+      box-shadow: 2px 2px 0 var(--border-color);
+    }
+
+    .step-header {
+      background: var(--bg-secondary);
+      padding: 0.65rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .step-header:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .step-title-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .step-num-badge {
+      background: var(--accent);
+      color: var(--accent-contrast);
+      border-radius: 4px;
+      font-size: 0.75rem;
+      padding: 0.1rem 0.4rem;
+      font-weight: 800;
+    }
+
+    .step-content {
+      padding: 1rem 1.25rem;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      border-top: 1px solid var(--border-light);
+      display: block;
+    }
+
+    .step-box.collapsed .step-content {
+      display: none;
+    }
+
+    .highlight-eq {
+      padding: 0.5rem 0.75rem;
+      background: var(--bg-tertiary);
+      border-left: 3px solid var(--border-color);
+      margin: 0.5rem 0;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .conclusion-box {
+      background: var(--bg-tertiary);
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.85rem 1.25rem;
+      margin-top: 1rem;
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Problem Description Box */
+    .problem-box {
+      border: 1.5px solid var(--border-color);
+      background: var(--bg-secondary);
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.95rem;
+    }
+
+    .problem-box strong {
+      display: block;
+      margin-bottom: 0.35rem;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Table styling for Method page */
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+
+    .custom-table th, .custom-table td {
+      border: 1.5px solid var(--border-color);
+      padding: 0.65rem 0.85rem;
+      text-align: left;
+    }
+
+    .custom-table th {
+      background: var(--bg-tertiary);
+      font-weight: 800;
+    }
+
+    .custom-table tr:hover {
+      background: var(--bg-secondary);
+    }
+
+    /* ==========================================================================
+       FOOTER & SHORTCUT BAR
+       ========================================================================== */
+    footer {
+      border-top: 1.5px solid var(--border-color);
+      padding: 1rem 0 0.5rem 0;
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .footer-nav {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .kbd-shortcut {
+      display: inline-block;
+      padding: 0.15rem 0.35rem;
+      border: 1px solid var(--border-color);
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+      }
+      header, .header-actions, .nav-tabs, .quiz-box, .board-controls, footer, .tip-callout {
+        display: none !important;
+      }
+      .page-content {
+        display: block !important;
+        page-break-after: always;
+      }
+      .card, .board-container, .step-box {
+        border-color: #000000 !important;
+        box-shadow: none !important;
+      }
+      .step-content {
+        display: block !important;
+      }
+    }
+  </style>
 </head>
 <body>
 
-  <div class="dawn" aria-hidden="true"></div>
-  <canvas id="dust" aria-hidden="true"></canvas>
+  <div class="app-container">
+    
+    <!-- TOP HEADER -->
+    <header>
+      <div class="header-top">
+        <div class="brand-title">
+          <span>📐 TOÁN 9: HỆ PHƯƠNG TRÌNH</span>
+          <span class="brand-badge">DẠNG 3: BÀI TOÁN THỰC TẾ</span>
+        </div>
+        <div class="header-actions">
+          <button class="btn-action" id="themeToggleBtn" title="Chuyển nền Giấy Trắng / Bảng Đen (Phím T)">
+            <span id="themeIcon">🌓</span> <span id="themeText">Đổi Theme (T)</span>
+          </button>
+          <button class="btn-action" id="fullscreenBtn" title="Chế độ Trình chiếu toàn màn hình (Phím F)">
+            ⛶ Trình chiếu (F)
+          </button>
+          <button class="btn-action" onclick="window.print()" title="In hoặc lưu file PDF">
+            🖨 In / PDF
+          </button>
+        </div>
+      </div>
 
-  <div class="sky" id="sky">
-    <div class="rainbow" aria-hidden="true"></div>
-    <div class="sun-rays" aria-hidden="true"></div>
-    <div class="sun" aria-hidden="true"></div>
-    <div class="cloud c1" aria-hidden="true"></div>
-    <div class="cloud c2" aria-hidden="true"></div>
-    <div class="cloud c3" aria-hidden="true"></div>
-    <div class="hill one"></div>
-    <div class="hill two"></div>
+      <!-- 5-PAGE NAVIGATION TABS -->
+      <nav class="nav-tabs" role="tablist">
+        <button class="tab-btn active" data-page="1" role="tab">
+          <span class="tab-number">Trang 1</span>
+          <span class="tab-title">🧠 Tư Duy & Mẹo Giảng</span>
+        </button>
+        <button class="tab-btn" data-page="2" role="tab">
+          <span class="tab-number">Trang 2</span>
+          <span class="tab-title">Bài 1: Giảm Giá Tivi/Tủ Lạnh</span>
+        </button>
+        <button class="tab-btn" data-page="3" role="tab">
+          <span class="tab-number">Trang 3</span>
+          <span class="tab-title">Bài 2: Năng Suất Vượt Mức</span>
+        </button>
+        <button class="tab-btn" data-page="4" role="tab">
+          <span class="tab-number">Trang 4</span>
+          <span class="tab-title">Bài 3: Lãi Suất Cô Hương</span>
+        </button>
+        <button class="tab-btn" data-page="5" role="tab">
+          <span class="tab-number">Trang 5</span>
+          <span class="tab-title">Bài 4: Lãi Suất Bác Hưng</span>
+        </button>
+      </nav>
+    </header>
+
+    <!-- =====================================================================
+         TRANG 1: PHƯƠNG PHÁP, TƯ DUY & MẸO GIẢNG DẠNG 3
+         ===================================================================== -->
+    <section class="page-content active" id="page-1">
+      <div class="page-headline">
+        <h2>Trang 1: Phương Pháp, Tư Duy & Mẹo Giảng Dạng 3</h2>
+        <span class="tagline">Hệ phương trình bậc nhất hai ẩn – Toán thực tế phần trăm, năng suất & lãi suất</span>
+      </div>
+
+      <!-- 4 BƯỚC ĂN ĐIỂM -->
+      <div class="card">
+        <div class="card-title">
+          <span>🎯 QUY TẮC "4 BƯỚC ĂN ĐIỂM TUYỆT ĐỐI" (CHUẨN VIẾT BẢNG)</span>
+          <span class="card-badge">BẮT BUỘC NHỚ</span>
+        </div>
+        
+        <div class="grid-2col" style="margin-bottom: 0;">
+          <div>
+            <div style="font-weight: 800; margin-bottom: 0.35rem;">Bước 1: Gọi ẩn + Đơn vị + Đặt điều kiện</div>
+            <p style="font-size: 0.92rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+              • Học sinh cực kỳ hay quên <strong>đơn vị</strong> hoặc <strong>điều kiện</strong>.<br>
+              • Đại lượng đếm được (sản phẩm, số người, số xe): bắt buộc $x, y \in \mathbb{N}^*$.<br>
+              • Tiền tệ, độ dài, khối lượng: $x, y > 0$ và nhỏ hơn tổng ban đầu ($0 < x, y < \text{Tổng}$).
+            </p>
+
+            <div style="font-weight: 800; margin-bottom: 0.35rem;">Bước 2: Biểu diễn đại lượng theo phần trăm (%)</div>
+            <p style="font-size: 0.92rem; color: var(--text-secondary);">
+              • <strong>Giảm giá $a\%$:</strong> Số tiền phải trả là $(100\% - a\%) = (1 - \frac{a}{100})$ giá gốc.<br>
+              • <strong>Vượt mức / Lãi suất $a\%$:</strong> Lấy trực tiếp $\frac{a}{100}$ nhân với ẩn (chỉ tính phần dôi thêm, không cộng dồn ẩn vào).
+            </p>
+          </div>
+
+          <div>
+            <div style="font-weight: 800; margin-bottom: 0.35rem;">Bước 3: Lập từng phương trình (1), (2) có câu dẫn logic</div>
+            <p style="font-size: 0.92rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+              • Luôn viết rõ câu dẫn trước mỗi phương trình: <em>"Vì theo kế hoạch...", "Do được giảm giá nên...", "Mà tổng tiền lãi nhận được là..."</em>.<br>
+              • Ghép thành hệ phương trình hai ẩn $x, y$.
+            </p>
+
+            <div style="font-weight: 800; margin-bottom: 0.35rem;">Bước 4: Giải hệ, đối chiếu điều kiện & kết luận</div>
+            <p style="font-size: 0.92rem; color: var(--text-secondary);">
+              • Giải bằng phương pháp thế hoặc cộng đại số.<br>
+              • Bắt buộc ghi <strong>(thỏa mãn điều kiện)</strong> bên cạnh nghiệm.<br>
+              • Viết câu kết luận: <em>"Vậy..."</em> kèm đơn vị đầy đủ.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- BẢNG PHÂN BIỆT 2 MÔ HÌNH PHƯƠNG TRÌNH PHẦN TRĂM -->
+      <div class="card">
+        <div class="card-title">
+          <span>⚖️ BẢNG PHÂN BIỆT 2 MÔ HÌNH TOÁN PHẦN TRĂM DỄ NHẦM LẪN</span>
+          <span class="card-badge">TƯ DUY BẢN CHẤT</span>
+        </div>
+        
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th style="width: 20%;">Tiêu chí</th>
+              <th style="width: 40%;">Mô Hình A: Cho TỔNG THỰC TẾ sau thay đổi</th>
+              <th style="width: 40%;">Mô Hình B: Chỉ cho TỔNG PHẦN DÔI THÊM / LÃI</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Đặc điểm đề bài</strong></td>
+              <td>Đề bài cho biết <em>Tổng số tiền thực trả</em>, hoặc <em>Tổng sản phẩm thực tế cả 2 tổ làm được</em>.</td>
+              <td>Đề bài cho biết <em>Tổng phần vượt mức</em> ($120$ sp), hoặc <em>Tổng tiền lãi cuối năm</em> ($35,5$ triệu).</td>
+            </tr>
+            <tr>
+              <td><strong>Công thức lập PT (2)</strong></td>
+              <td>
+                • Giảm giá: $(1 - a\%)x + (1 - b\%)y = \text{Tổng tiền mới}$<br>
+                • Tăng giá/vượt mức: $(1 + a\%)x + (1 + b\%)y = \text{Tổng mới}$
+              </td>
+              <td>
+                $$a\% \cdot x + b\% \cdot y = \text{Tổng chênh lệch / Lãi}$$
+                <em>(Tuyệt đối không cộng thêm $x, y$ vào vế trái)</em>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Ví dụ áp dụng</strong></td>
+              <td><strong>Bài 1:</strong> Bác Cường trả $26,805$ triệu sau khi giảm giá $25\%$ và $30\%$.</td>
+              <td><strong>Bài 2, 3, 4:</strong> Vượt mức $120$ sản phẩm; Tiền lãi $35,5$ triệu; Tiền lãi $22$ triệu.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- BẪY HỌC SINH HAY MẮC -->
+      <div class="card" style="border-left: 4px solid var(--border-color);">
+        <div class="card-title">
+          <span>⚠️ 3 BẪY HỌC SINH HAY MẤT ĐIỂM OAN NHẤT</span>
+        </div>
+        <ul style="padding-left: 1.25rem; font-size: 0.92rem; line-height: 1.8;">
+          <li><strong>Bẫy 1 (Đổi sai phần trăm):</strong> $5\% = 0,05$ và $8\% = 0,08$. Rất nhiều học sinh bấm máy hoặc đổi nhẩm thành $0,5$ và $0,8$ dẫn đến sai toàn bộ bài giải.</li>
+          <li><strong>Bẫy 2 (Nhầm lẫn giữa phần giảm và phần phải trả):</strong> Giảm $25\%$ thì số tiền phải trả là $75\% = 0,75x$, không được lấy $0,25x$ cộng vào phương trình tổng tiền trả.</li>
+          <li><strong>Bẫy 3 (Thiếu điều kiện tập hợp):</strong> Số sản phẩm phải có $x, y \in \mathbb{N}^*$, nếu chỉ ghi $x, y > 0$ thì bị trừ $0,25$ điểm điều kiện.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TRANG 2: BÀI 1 - TOÁN PHẦN TRĂM GIẢM GIÁ (TIVI & TỦ LẠNH)
+         ===================================================================== -->
+    <section class="page-content" id="page-2">
+      <div class="page-headline">
+        <h2>Trang 2: Bài 1 – Toán Phần Trăm Giảm Giá</h2>
+        <span class="tagline">Đề bài: Mua tivi 65 in và tủ lạnh 2 cửa tại siêu thị điện máy</span>
+      </div>
+
+      <!-- ĐỀ BÀI TÓM TẮT -->
+      <div class="problem-box">
+        <strong>Tóm tắt đề bài:</strong>
+        Tổng giá niêm yết của 1 tivi 65 in và 1 tủ lạnh 2 cửa là $36,8$ triệu đồng. Nhân dịp khuyến mãi, siêu thị giảm giá $25\%$ cho tivi và giảm $30\%$ cho tủ lạnh. Bác Cường mua cả hai món đồ đó và trả tổng cộng $26,805$ triệu đồng. Tính giá niêm yết ban đầu của mỗi sản phẩm.
+      </div>
+
+      <!-- MINI-QUIZ TƯ DUY -->
+      <div class="quiz-box" id="quiz-p2">
+        <div class="quiz-header">
+          <div class="quiz-title">💡 Mini-Quiz Gợi Mở Tư Duy (Hỏi học sinh trước khi giải)</div>
+          <span class="card-badge">CÂU HỎI 1/1</span>
+        </div>
+        <div class="quiz-prompt">
+          Tivi được giảm giá $25\%$ so với giá niêm yết $x$. Vậy số tiền thực tế Bác Cường phải trả cho chiếc tivi là bao nhiêu?
+        </div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="checkAnswer('quiz-p2', 0, false, 'Sai rồi! $0,25x$ chỉ là số tiền ĐƯỢC BỚT, không phải số tiền Bác Cường phải trả!')">
+            A. $25\%x = 0,25x$ (triệu đồng)
+          </button>
+          <button class="quiz-opt" onclick="checkAnswer('quiz-p2', 1, true, 'Chính xác! Giảm 25% thì phải trả 100% - 25% = 75% = 0,75x giá niêm yết.')">
+            B. $75\%x = 0,75x$ (triệu đồng)
+          </button>
+          <button class="quiz-opt" onclick="checkAnswer('quiz-p2', 2, false, 'Sai rồi! Đây là giảm giá chứ không phải tăng giá!')">
+            C. $125\%x = 1,25x$ (triệu đồng)
+          </button>
+        </div>
+        <div class="quiz-feedback" id="feedback-quiz-p2"></div>
+      </div>
+
+      <!-- MẸO GIẢNG DẠY CỦA GIÁO VIÊN (TOGGLE) -->
+      <div class="tip-callout">
+        <div class="tip-toggle-header" onclick="toggleTip('tip-p2')">
+          <div class="tip-label">
+            <span>📢 Mẹo sư phạm khi giảng Bài 1</span>
+          </div>
+          <span id="tip-p2-icon" style="font-weight: 800;">[Ẩn/Hiện]</span>
+        </div>
+        <div class="tip-body" id="tip-p2">
+          <ul>
+            <li><strong>Nhấn mạnh bản chất:</strong> Giảm giá $25\%$ nghĩa là siêu thị bớt đi $25\%$, người mua phải trả $100\% - 25\% = 75\% = 0,75$ giá niêm yết. Tương tự tủ lạnh giảm $30\%$ thì phải trả $70\% = 0,7$.</li>
+            <li><strong>Tại sao phương trình (2) là $0,75x + 0,7y = 26,805$?</strong> Vì đề bài cho con số $26,805$ triệu đồng là <em>"tổng số tiền thực tế bác Cường phải trả"</em>.</li>
+            <li><strong>Đơn vị:</strong> Khuyên học sinh giữ nguyên đơn vị là "triệu đồng" để số liệu gọn gàng (không nên đổi ra 36.800.000 đồng sẽ dễ bấm nhầm số 0).</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- TRÌNH BÀY VIẾT BẢNG CHI TIẾT -->
+      <div class="board-container">
+        <div class="board-header">
+          <div class="board-title">
+            <span>📋 Trình Bày Chuẩn Viết Bảng Trên Lớp</span>
+          </div>
+          <div class="board-controls">
+            <button class="btn-action" onclick="toggleAllSteps('page-2', true)">Mở hết các bước</button>
+            <button class="btn-action" onclick="toggleAllSteps('page-2', false)">Thu gọn lại</button>
+          </div>
+        </div>
+
+        <!-- BƯỚC 1 -->
+        <div class="step-box active" id="p2-step-1">
+          <div class="step-header" onclick="toggleStep('p2-step-1')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 1</span>
+              <span>Gọi ẩn và đặt điều kiện</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            • Gọi $x$ (triệu đồng) là giá niêm yết của chiếc tivi loại A.<br>
+            • Gọi $y$ (triệu đồng) là giá niêm yết của chiếc tủ lạnh loại B.<br>
+            • Điều kiện: $0 < x, y < 36,8$.
+          </div>
+        </div>
+
+        <!-- BƯỚC 2 -->
+        <div class="step-box active" id="p2-step-2">
+          <div class="step-header" onclick="toggleStep('p2-step-2')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 2</span>
+              <span>Lập phương trình (1) từ tổng giá niêm yết</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            Vì tổng giá niêm yết của chiếc tivi 65 in và một chiếc tủ lạnh loại hai cửa là $36,8$ triệu đồng, nên ta có phương trình:
+            <div class="highlight-eq">
+              $$x + y = 36,8 \quad (1)$$
+            </div>
+          </div>
+        </div>
+
+        <!-- BƯỚC 3 -->
+        <div class="step-box active" id="p2-step-3">
+          <div class="step-header" onclick="toggleStep('p2-step-3')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 3</span>
+              <span>Biểu diễn giá sau giảm và lập phương trình (2)</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            Do tivi 65 in được giảm $25\%$ nên số tiền phải trả là $75\%x = 0,75x$ (triệu đồng) và tủ lạnh loại hai cửa giảm $30\%$ nên số tiền phải trả là $70\%y = 0,7y$ (triệu đồng).<br>
+            Mà tổng số tiền Bác Cường phải trả sau khi giảm giá là $26,805$ triệu đồng, nên ta có phương trình:
+            <div class="highlight-eq">
+              $$0,75x + 0,7y = 26,805 \quad (2)$$
+            </div>
+          </div>
+        </div>
+
+        <!-- BƯỚC 4 -->
+        <div class="step-box active" id="p2-step-4">
+          <div class="step-header" onclick="toggleStep('p2-step-4')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 4</span>
+              <span>Lập hệ, giải chi tiết & đối chiếu điều kiện</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            Từ $(1)$ và $(2)$ ta có hệ phương trình:
+            <div class="highlight-eq">
+              $$\begin{cases} x + y = 36,8 \\ 0,75x + 0,7y = 26,805 \end{cases}$$
+            </div>
+            Từ phương trình $(1) \Rightarrow y = 36,8 - x$, thế vào phương trình $(2)$ ta được:
+            $$\begin{aligned} 
+              0,75x + 0,7(36,8 - x) &= 26,805 \\ 
+              0,75x + 25,76 - 0,7x &= 26,805 \\ 
+              0,05x &= 1,045 \\ 
+              x &= 20,9 \quad (\text{thỏa mãn}) 
+            \end{aligned}$$
+            Thay $x = 20,9$ vào $(1)$ ta được: 
+            $$y = 36,8 - 20,9 = 15,9 \quad (\text{thỏa mãn})$$
+          </div>
+        </div>
+
+        <!-- KẾT LUẬN -->
+        <div class="conclusion-box">
+          <span>✅ KẾT LUẬN:</span>
+          <span>Vậy giá niêm yết của chiếc tivi loại A là $20,9$ triệu đồng và giá niêm yết của chiếc tủ lạnh loại B là $15,9$ triệu đồng.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TRANG 3: BÀI 2 - TOÁN NĂNG SUẤT VƯỢT MỨC KẾ HOẠCH
+         ===================================================================== -->
+    <section class="page-content" id="page-3">
+      <div class="page-headline">
+        <h2>Trang 3: Bài 2 – Năng Suất Vượt Mức Kế Hoạch</h2>
+        <span class="tagline">Đề bài: Hai tổ sản xuất vượt mức kế hoạch 120 sản phẩm</span>
+      </div>
+
+      <div class="problem-box">
+        <strong>Tóm tắt đề bài:</strong>
+        Theo kế hoạch, hai tổ phải sản xuất $600$ sản phẩm trong một thời gian nhất định. Nhờ cải tiến kỹ thuật, tổ I vượt mức kế hoạch $18\%$, tổ II vượt mức kế hoạch $21\%$. Do đó cả hai tổ đã hoàn thành vượt mức $120$ sản phẩm. Tính số sản phẩm mỗi tổ được giao theo kế hoạch.
+      </div>
+
+      <!-- MINI-QUIZ TƯ DUY -->
+      <div class="quiz-box" id="quiz-p3">
+        <div class="quiz-header">
+          <div class="quiz-title">💡 Mini-Quiz Gợi Mở Tư Duy (Hỏi học sinh trước khi giải)</div>
+          <span class="card-badge">CÂU HỎI 1/1</span>
+        </div>
+        <div class="quiz-prompt">
+          Số liệu $120$ sản phẩm trong đề bài đại diện cho đại lượng nào?
+        </div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="checkAnswer('quiz-p3', 0, false, 'Sai rồi! 120 chỉ là phần làm thêm dôi ra, thực tế cả 2 tổ làm được 600 + 120 = 720 sản phẩm.')">
+            A. Tổng số sản phẩm thực tế cả hai tổ làm được
+          </button>
+          <button class="quiz-opt" onclick="checkAnswer('quiz-p3', 1, true, 'Rất chính xác! 120 là phần dôi ra (vượt mức), nên phương trình (2) chỉ lấy phần vượt mức cộng lại: 0,18x + 0,21y = 120.')">
+            B. Tổng số sản phẩm làm vượt mức (dôi ra) của cả hai tổ
+          </button>
+          <button class="quiz-opt" onclick="checkAnswer('quiz-p3', 2, false, 'Sai rồi! Đề bài không nói về sự chênh lệch giữa hai tổ.')">
+            C. Tổ II làm nhiều hơn tổ I là 120 sản phẩm
+          </button>
+        </div>
+        <div class="quiz-feedback" id="feedback-quiz-p3"></div>
+      </div>
+
+      <!-- MẸO GIẢNG DẠY CỦA GIÁO VIÊN -->
+      <div class="tip-callout">
+        <div class="tip-toggle-header" onclick="toggleTip('tip-p3')">
+          <div class="tip-label">
+            <span>📢 Mẹo sư phạm khi giảng Bài 2</span>
+          </div>
+          <span id="tip-p3-icon" style="font-weight: 800;">[Ẩn/Hiện]</span>
+        </div>
+        <div class="tip-body" id="tip-p3">
+          <ul>
+            <li><strong>Nhắc học sinh đọc kỹ:</strong> Con số $120$ sản phẩm là <strong>phần vượt mức</strong> chứ không phải tổng sản phẩm thực tế. Do đó phương trình $(2)$ chỉ lấy phần vượt mức cộng lại: $0,18x + 0,21y = 120$. Không cộng $x, y$ vào vế trái!</li>
+            <li><strong>Điều kiện bắt buộc:</strong> Sản phẩm là đồ vật đếm được, bắt buộc điều kiện phải là $x, y \in \mathbb{N}^*$ và $x, y < 600$. Học sinh chỉ ghi $x, y > 0$ là bị trừ điểm.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- BẢNG VIẾT CHI TIẾT -->
+      <div class="board-container">
+        <div class="board-header">
+          <div class="board-title">
+            <span>📋 Trình Bày Chuẩn Viết Bảng Trên Lớp</span>
+          </div>
+          <div class="board-controls">
+            <button class="btn-action" onclick="toggleAllSteps('page-3', true)">Mở hết các bước</button>
+            <button class="btn-action" onclick="toggleAllSteps('page-3', false)">Thu gọn lại</button>
+          </div>
+        </div>
+
+        <!-- BƯỚC 1 -->
+        <div class="step-box active" id="p3-step-1">
+          <div class="step-header" onclick="toggleStep('p3-step-1')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 1</span>
+              <span>Gọi ẩn và đặt điều kiện chuẩn</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            • Gọi $x$ (sản phẩm) là số sản phẩm được giao của tổ I theo kế hoạch.<br>
+            • Gọi $y$ (sản phẩm) là số sản phẩm được giao của tổ II theo kế hoạch.<br>
+            • Điều kiện: $x, y \in \mathbb{N}^*$ và $x, y < 600$.
+          </div>
+        </div>
+
+        <!-- BƯỚC 2 -->
+        <div class="step-box active" id="p3-step-2">
+          <div class="step-header" onclick="toggleStep('p3-step-2')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 2</span>
+              <span>Lập phương trình (1) theo kế hoạch giao</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            Vì theo kế hoạch hai tổ sản xuất $600$ sản phẩm trong một thời gian nhất định, nên ta có phương trình:
+            <div class="highlight-eq">
+              $$x + y = 600 \quad (1)$$
+            </div>
+          </div>
+        </div>
+
+        <!-- BƯỚC 3 -->
+        <div class="step-box active" id="p3-step-3">
+          <div class="step-header" onclick="toggleStep('p3-step-3')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 3</span>
+              <span>Biểu diễn lượng vượt mức và lập phương trình (2)</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            Do cải tiến kỹ thuật nên tổ I sản xuất vượt kế hoạch $18\%$, tức là vượt $18\%x = 0,18x$ (sản phẩm); và tổ II sản xuất vượt mức kế hoạch $21\%$, tức là vượt $21\%y = 0,21y$ (sản phẩm).<br>
+            Mà cả hai tổ đã hoàn thành vượt mức $120$ sản phẩm, nên ta có phương trình:
+            <div class="highlight-eq">
+              $$0,18x + 0,21y = 120 \quad (2)$$
+            </div>
+          </div>
+        </div>
+
+        <!-- BƯỚC 4 -->
+        <div class="step-box active" id="p3-step-4">
+          <div class="step-header" onclick="toggleStep('p3-step-4')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 4</span>
+              <span>Lập hệ và giải</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            Từ $(1)$ và $(2)$ ta có hệ phương trình:
+            <div class="highlight-eq">
+              $$\begin{cases} x + y = 600 \\ 0,18x + 0,21y = 120 \end{cases}$$
+            </div>
+            Từ phương trình $(1) \Rightarrow y = 600 - x$, thế vào phương trình $(2)$ ta được:
+            $$\begin{aligned} 
+              0,18x + 0,21(600 - x) &= 120 \\ 
+              0,18x + 126 - 0,21x &= 120 \\ 
+              -0,03x &= -6 \\ 
+              x &= 200 \quad (\text{thỏa mãn}) 
+            \end{aligned}$$
+            Thay $x = 200$ vào $(1)$ ta được: 
+            $$y = 600 - 200 = 400 \quad (\text{thỏa mãn})$$
+          </div>
+        </div>
+
+        <!-- KẾT LUẬN -->
+        <div class="conclusion-box">
+          <span>✅ KẾT LUẬN:</span>
+          <span>Vậy theo kế hoạch, tổ I được giao $200$ sản phẩm và tổ II được giao $400$ sản phẩm.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TRANG 4: BÀI 3 - TOÁN LÃI SUẤT ĐẦU TƯ (CÔ HƯƠNG)
+         ===================================================================== -->
+    <section class="page-content" id="page-4">
+      <div class="page-headline">
+        <h2>Trang 4: Bài 3 – Toán Lãi Suất Đầu Tư (Cô Hương)</h2>
+        <span class="tagline">Đề bài: Đầu tư trái phiếu doanh nghiệp (8%/năm) và trái phiếu chính phủ (5%/năm)</span>
+      </div>
+
+      <div class="problem-box">
+        <strong>Tóm tắt đề bài:</strong>
+        Cô Hương đầu tư tổng cộng $500$ triệu đồng vào hai khoản: mua trái phiếu doanh nghiệp với lãi suất $8\%$/năm và mua trái phiếu chính phủ với lãi suất $5\%$/năm. Sau 1 năm, tổng số tiền lãi cô Hương nhận được là $35,5$ triệu đồng. Tính số tiền cô Hương đã đầu tư vào mỗi loại trái phiếu.
+      </div>
+
+      <!-- MINI-QUIZ TƯ DUY -->
+      <div class="quiz-box" id="quiz-p4">
+        <div class="quiz-header">
+          <div class="quiz-title">💡 Mini-Quiz Gợi Mở Tư Duy (Hỏi học sinh trước khi giải)</div>
+          <span class="card-badge">CÂU HỎI 1/1</span>
+        </div>
+        <div class="quiz-prompt">
+          Học sinh hay bị nhầm lẫn khi đổi $8\%$ và $5\%$ ra số thập phân. Cách đổi nào sau đây là ĐÚNG?
+        </div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="checkAnswer('quiz-p4', 0, false, 'Sai rồi! 0,8 = 80% và 0,5 = 50% chứ không phải 8% và 5%!')">
+            A. $8\% = 0,8$ và $5\% = 0,5$
+          </button>
+          <button class="quiz-opt" onclick="checkAnswer('quiz-p4', 1, true, 'Hoàn toàn chính xác! 8% = 8/100 = 0,08 và 5% = 5/100 = 0,05.')">
+            B. $8\% = 0,08$ và $5\% = 0,05$
+          </button>
+          <button class="quiz-opt" onclick="checkAnswer('quiz-p4', 2, false, 'Sai rồi! Thừa một chữ số 0.')">
+            C. $8\% = 0,008$ và $5\% = 0,005$
+          </button>
+        </div>
+        <div class="quiz-feedback" id="feedback-quiz-p4"></div>
+      </div>
+
+      <!-- MẸO GIẢNG DẠY CỦA GIÁO VIÊN -->
+      <div class="tip-callout">
+        <div class="tip-toggle-header" onclick="toggleTip('tip-p4')">
+          <div class="tip-label">
+            <span>📢 Mẹo sư phạm khi giảng Bài 3</span>
+          </div>
+          <span id="tip-p4-icon" style="font-weight: 800;">[Ẩn/Hiện]</span>
+        </div>
+        <div class="tip-body" id="tip-p4">
+          <ul>
+            <li><strong>Cùng bản chất với Bài 2:</strong> Đề bài cho biết <em>tổng tiền lãi cuối năm</em> là $35,5$ triệu đồng, do đó ta tính riêng tiền lãi từng khoản ($8\%x$ và $5\%y$) rồi cộng lại.</li>
+            <li><strong>Nhắc nhở học sinh:</strong> Giữ nguyên đơn vị "triệu đồng". Tránh nhầm $8\% = 0,8$ và $5\% = 0,5$.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- BẢNG VIẾT CHI TIẾT -->
+      <div class="board-container">
+        <div class="board-header">
+          <div class="board-title">
+            <span>📋 Trình Bày Chuẩn Viết Bảng Trên Lớp</span>
+          </div>
+          <div class="board-controls">
+            <button class="btn-action" onclick="toggleAllSteps('page-4', true)">Mở hết các bước</button>
+            <button class="btn-action" onclick="toggleAllSteps('page-4', false)">Thu gọn lại</button>
+          </div>
+        </div>
+
+        <!-- BƯỚC 1 -->
+        <div class="step-box active" id="p4-step-1">
+          <div class="step-header" onclick="toggleStep('p4-step-1')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 1</span>
+              <span>Gọi ẩn và đặt điều kiện</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            • Gọi $x$ (triệu đồng) là số tiền cô Hương đầu tư mua trái phiếu doanh nghiệp.<br>
+            • Gọi $y$ (triệu đồng) là số tiền cô Hương đầu tư mua trái phiếu chính phủ.<br>
+            • Điều kiện: $0 < x, y < 500$.
+          </div>
+        </div>
+
+        <!-- BƯỚC 2 -->
+        <div class="step-box active" id="p4-step-2">
+          <div class="step-header" onclick="toggleStep('p4-step-2')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 2</span>
+              <span>Lập phương trình (1) từ tổng vốn đầu tư</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            Vì cô Hương đầu tư tổng cộng $500$ triệu đồng vào 2 khoản, nên ta có phương trình:
+            <div class="highlight-eq">
+              $$x + y = 500 \quad (1)$$
+            </div>
+          </div>
+        </div>
+
+        <!-- BƯỚC 3 -->
+        <div class="step-box active" id="p4-step-3">
+          <div class="step-header" onclick="toggleStep('p4-step-3')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 3</span>
+              <span>Biểu diễn tiền lãi và lập phương trình (2)</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            Do mua trái phiếu doanh nghiệp có lãi suất $8\%$/năm nên số tiền lãi nhận được là $8\%x = 0,08x$ (triệu đồng); và mua trái phiếu chính phủ có lãi suất $5\%$/năm nên số tiền lãi nhận được là $5\%y = 0,05y$ (triệu đồng).<br>
+            Mà cuối năm cô Hương nhận được tổng cộng $35,5$ triệu đồng tiền lãi, nên ta có phương trình:
+            <div class="highlight-eq">
+              $$0,08x + 0,05y = 35,5 \quad (2)$$
+            </div>
+          </div>
+        </div>
+
+        <!-- BƯỚC 4 -->
+        <div class="step-box active" id="p4-step-4">
+          <div class="step-header" onclick="toggleStep('p4-step-4')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 4</span>
+              <span>Lập hệ và giải chi tiết</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            Từ $(1)$ và $(2)$ ta có hệ phương trình:
+            <div class="highlight-eq">
+              $$\begin{cases} x + y = 500 \\ 0,08x + 0,05y = 35,5 \end{cases}$$
+            </div>
+            Từ phương trình $(1) \Rightarrow y = 500 - x$, thế vào phương trình $(2)$ ta được:
+            $$\begin{aligned} 
+              0,08x + 0,05(500 - x) &= 35,5 \\ 
+              0,08x + 25 - 0,05x &= 35,5 \\ 
+              0,03x &= 10,5 \\ 
+              x &= 350 \quad (\text{thỏa mãn}) 
+            \end{aligned}$$
+            Thay $x = 350$ vào $(1)$ ta được: 
+            $$y = 500 - 350 = 150 \quad (\text{thỏa mãn})$$
+          </div>
+        </div>
+
+        <!-- KẾT LUẬN -->
+        <div class="conclusion-box">
+          <span>✅ KẾT LUẬN:</span>
+          <span>Vậy cô Hương đã đầu tư $350$ triệu đồng vào mua trái phiếu doanh nghiệp và $150$ triệu đồng vào mua trái phiếu chính phủ.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TRANG 5: BÀI 4 - TOÁN LÃI SUẤT ĐẦU TƯ (BÁC HƯNG)
+         ===================================================================== -->
+    <section class="page-content" id="page-5">
+      <div class="page-headline">
+        <h2>Trang 5: Bài 4 – Toán Lãi Suất Đầu Tư (Bác Hưng)</h2>
+        <span class="tagline">Đề bài: Trái phiếu doanh nghiệp (8%/năm) và Gửi tiết kiệm ngân hàng (6%/năm)</span>
+      </div>
+
+      <div class="problem-box">
+        <strong>Tóm tắt đề bài:</strong>
+        Bác Hưng có $300$ triệu đồng để đầu tư vào hai khoản: mua trái phiếu doanh nghiệp với lãi suất $8\%$/năm và gửi tiết kiệm ngân hàng với lãi suất $6\%$/năm. Sau 1 năm, tổng tiền lãi bác Hưng nhận được là $22$ triệu đồng. Tính số tiền bác Hưng đã đầu tư vào mỗi khoản.
+      </div>
+
+      <!-- MINI-QUIZ TƯ DUY -->
+      <div class="quiz-box" id="quiz-p5">
+        <div class="quiz-header">
+          <div class="quiz-title">💡 Mini-Quiz Gợi Mở Tư Duy (Tự luyện tập)</div>
+          <span class="card-badge">CÂU HỎI 1/1</span>
+        </div>
+        <div class="quiz-prompt">
+          Phương trình biểu diễn tổng tiền lãi $22$ triệu đồng của Bác Hưng được lập như thế nào?
+        </div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="checkAnswer('quiz-p5', 0, false, 'Sai rồi! Đổi 8% và 6% thành 0,8 và 0,6 là sai.')">
+            A. $0,8x + 0,6y = 22$
+          </button>
+          <button class="quiz-opt" onclick="checkAnswer('quiz-p5', 1, true, 'Xuất sắc! Lãi trái phiếu là 0,08x và lãi gửi ngân hàng là 0,06y.')">
+            B. $0,08x + 0,06y = 22$
+          </button>
+          <button class="quiz-opt" onclick="checkAnswer('quiz-p5', 2, false, 'Sai rồi! 1,08x + 1,06y là tổng tiền cả gốc lẫn lãi nhận về, không phải chỉ riêng tiền lãi.')">
+            C. $1,08x + 1,06y = 22$
+          </button>
+        </div>
+        <div class="quiz-feedback" id="feedback-quiz-p5"></div>
+      </div>
+
+      <!-- MẸO GIẢNG DẠY CỦA GIÁO VIÊN -->
+      <div class="tip-callout">
+        <div class="tip-toggle-header" onclick="toggleTip('tip-p5')">
+          <div class="tip-label">
+            <span>📢 Mẹo sư phạm khi giảng Bài 4</span>
+          </div>
+          <span id="tip-p5-icon" style="font-weight: 800;">[Ẩn/Hiện]</span>
+        </div>
+        <div class="tip-body" id="tip-p5">
+          <ul>
+            <li><strong>Phương pháp kiểm tra học sinh:</strong> Bài 4 hoàn toàn cùng khuôn mẫu với Bài 3. Sau khi bạn giảng mẫu Bài 3, hãy để học sinh tự đặt bút làm Bài 4 vào vở rồi chiếu từng bước này lên để học sinh tự chấm chéo bài của nhau.</li>
+            <li><strong>Điểm mấu chốt:</strong> Nhắc học sinh đối chiếu điều kiện $0 < x, y < 300$ và ghi rõ chữ <em>(thỏa mãn)</em> ở cả $x$ và $y$.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- BẢNG VIẾT CHI TIẾT -->
+      <div class="board-container">
+        <div class="board-header">
+          <div class="board-title">
+            <span>📋 Trình Bày Chuẩn Viết Bảng Trên Lớp</span>
+          </div>
+          <div class="board-controls">
+            <button class="btn-action" onclick="toggleAllSteps('page-5', true)">Mở hết các bước</button>
+            <button class="btn-action" onclick="toggleAllSteps('page-5', false)">Thu gọn lại</button>
+          </div>
+        </div>
+
+        <!-- BƯỚC 1 -->
+        <div class="step-box active" id="p5-step-1">
+          <div class="step-header" onclick="toggleStep('p5-step-1')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 1</span>
+              <span>Gọi ẩn và đặt điều kiện</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            • Gọi $x$ (triệu đồng) là số tiền Bác Hưng đầu tư mua trái phiếu doanh nghiệp.<br>
+            • Gọi $y$ (triệu đồng) là số tiền Bác Hưng gửi tiết kiệm ngân hàng.<br>
+            • Điều kiện: $0 < x, y < 300$.
+          </div>
+        </div>
+
+        <!-- BƯỚC 2 -->
+        <div class="step-box active" id="p5-step-2">
+          <div class="step-header" onclick="toggleStep('p5-step-2')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 2</span>
+              <span>Lập phương trình (1) từ tổng vốn đầu tư</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            Vì Bác Hưng đầu tư tổng cộng $300$ triệu đồng vào 2 khoản, nên ta có phương trình:
+            <div class="highlight-eq">
+              $$x + y = 300 \quad (1)$$
+            </div>
+          </div>
+        </div>
+
+        <!-- BƯỚC 3 -->
+        <div class="step-box active" id="p5-step-3">
+          <div class="step-header" onclick="toggleStep('p5-step-3')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 3</span>
+              <span>Biểu diễn tiền lãi và lập phương trình (2)</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            Do mua trái phiếu doanh nghiệp với lãi suất $8\%$/năm nên tiền lãi là $8\%x = 0,08x$ (triệu đồng); và gửi tiết kiệm ngân hàng với lãi suất $6\%$/năm nên tiền lãi là $6\%y = 0,06y$ (triệu đồng).<br>
+            Mà cuối năm Bác Hưng nhận được $22$ triệu đồng tiền lãi, nên ta có phương trình:
+            <div class="highlight-eq">
+              $$0,08x + 0,06y = 22 \quad (2)$$
+            </div>
+          </div>
+        </div>
+
+        <!-- BƯỚC 4 -->
+        <div class="step-box active" id="p5-step-4">
+          <div class="step-header" onclick="toggleStep('p5-step-4')">
+            <div class="step-title-left">
+              <span class="step-num-badge">BƯỚC 4</span>
+              <span>Lập hệ và giải chi tiết</span>
+            </div>
+            <span>▾</span>
+          </div>
+          <div class="step-content">
+            Từ $(1)$ và $(2)$ ta có hệ phương trình:
+            <div class="highlight-eq">
+              $$\begin{cases} x + y = 300 \\ 0,08x + 0,06y = 22 \end{cases}$$
+            </div>
+            Từ phương trình $(1) \Rightarrow y = 300 - x$, thế vào phương trình $(2)$ ta được:
+            $$\begin{aligned} 
+              0,08x + 0,06(300 - x) &= 22 \\ 
+              0,08x + 18 - 0,06x &= 22 \\ 
+              0,02x &= 4 \\ 
+              x &= 200 \quad (\text{thỏa mãn}) 
+            \end{aligned}$$
+            Thay $x = 200$ vào $(1)$ ta được: 
+            $$y = 300 - 200 = 100 \quad (\text{thỏa mãn})$$
+          </div>
+        </div>
+
+        <!-- KẾT LUẬN -->
+        <div class="conclusion-box">
+          <span>✅ KẾT LUẬN:</span>
+          <span>Vậy Bác Hưng đã đầu tư $200$ triệu đồng mua trái phiếu doanh nghiệp và $100$ triệu đồng gửi tiết kiệm ngân hàng.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER & SHORTCUT INFO -->
+    <footer>
+      <div>
+        <span>Phím tắt: </span>
+        <span class="kbd-shortcut">←</span> lùi trang &nbsp;
+        <span class="kbd-shortcut">→</span> tiến trang &nbsp;
+        <span class="kbd-shortcut">T</span> đổi theme Trắng/Đen &nbsp;
+        <span class="kbd-shortcut">F</span> toàn màn hình
+      </div>
+      <div class="footer-nav">
+        <button class="btn-action" id="prevPageBtn">← Trang trước</button>
+        <button class="btn-action" id="nextPageBtn">Trang sau →</button>
+      </div>
+    </footer>
+
   </div>
 
-  <main class="content">
-    <p class="time-greeting"><i class="fa-solid fa-mug-hot"></i><span id="timeGreeting"></span></p>
-    <h1 class="title"><span id="titleText"></span><span class="cursor" aria-hidden="true"></span></h1>
-    <div class="poem">
-      <span class="poem-line" id="poemLine0"></span>
-      <span class="poem-line" id="poemLine1"></span>
-      <span class="poem-line" id="poemLine2"></span>
-      <span class="poem-line" id="poemLine3"></span>
-    </div>
-    <p class="hint"><i class="fa-solid fa-seedling"></i>Chạm vào những chú bướm để nhận lời chúc gửi riêng cho Như Ý</p>
-  </main>
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // State
+    let currentPage = 1;
+    const totalPages = 5;
 
-  <div class="overlay" id="overlay">
-    <div class="card">
-      <div class="card-sun"></div>
-      <p id="messageText"></p>
-      <button class="close-btn" id="closeMessage"><i class="fa-solid fa-xmark"></i>Đóng lại</button>
-    </div>
-  </div>
+    // Elements
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const pageContents = document.querySelectorAll('.page-content');
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeText = document.getElementById('themeText');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
 
-  <a href="good-night.html?stay=1" class="mode-switch-btn" aria-label="Xem trang chúc ngủ ngon" title="Xem trang chúc ngủ ngon">
-    <i class="fa-solid fa-moon"></i>
-  </a>
+    // Tab Navigation Switch
+    function goToPage(page) {
+      if (page < 1 || page > totalPages) return;
+      currentPage = page;
 
-  <button class="music-btn" id="musicBtn" aria-label="Bật nhạc nền">
-    <i class="fa-solid fa-music icon-on"></i>
-    <i class="fa-solid fa-volume-xmark icon-off"></i>
-  </button>
+      tabButtons.forEach(btn => {
+        const p = parseInt(btn.getAttribute('data-page'));
+        btn.classList.toggle('active', p === page);
+      });
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" integrity="sha384-sPwMflxqfAN+Q5mvlkLmHiX3PORGbZSXHiSGPTXT9VHCD/AB+b+r+vJWsqprv+7k" crossorigin="anonymous"></script>
-  <script src="magic.js"></script>
-  <script src="morning.js"></script>
+      pageContents.forEach(content => {
+        const id = content.id;
+        const pageNum = parseInt(id.replace('page-', ''));
+        content.classList.toggle('active', pageNum === page);
+      });
+
+      // Update prev/next button states
+      prevBtn.disabled = (currentPage === 1);
+      nextBtn.disabled = (currentPage === totalPages);
+      prevBtn.style.opacity = (currentPage === 1) ? "0.5" : "1";
+      nextBtn.style.opacity = (currentPage === totalPages) ? "0.5" : "1";
+
+      // Re-render MathJax on page switch if needed
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Attach click events to tabs
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const p = parseInt(btn.getAttribute('data-page'));
+        goToPage(p);
+      });
+    });
+
+    prevBtn.addEventListener('click', () => goToPage(currentPage - 1));
+    nextBtn.addEventListener('click', () => goToPage(currentPage + 1));
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Don't trigger if typing in an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      if (e.key === 'ArrowLeft') {
+        goToPage(currentPage - 1);
+      } else if (e.key === 'ArrowRight') {
+        goToPage(currentPage + 1);
+      } else if (e.key.toLowerCase() === 't') {
+        toggleTheme();
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullscreen();
+      }
+    });
+
+    // Theme Toggle (Trắng Đen / High-Contrast Monochrome)
+    function toggleTheme() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      
+      if (newTheme === 'dark') {
+        themeIcon.textContent = '☀️';
+        themeText.textContent = 'Giấy Trắng (T)';
+      } else {
+        themeIcon.textContent = '🌙';
+        themeText.textContent = 'Bảng Đen (T)';
+      }
+    }
+    themeToggleBtn.addEventListener('click', toggleTheme);
+
+    // Fullscreen Mode
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          alert(`Lỗi khi mở toàn màn hình: ${err.message}`);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    // Toggle Step in Solution
+    function toggleStep(stepId) {
+      const step = document.getElementById(stepId);
+      if (step) {
+        step.classList.toggle('collapsed');
+      }
+    }
+
+    // Toggle All Steps on a page
+    function toggleAllSteps(pageId, openAll) {
+      const container = document.getElementById(pageId);
+      if (!container) return;
+      const steps = container.querySelectorAll('.step-box');
+      steps.forEach(st => {
+        if (openAll) {
+          st.classList.remove('collapsed');
+        } else {
+          st.classList.add('collapsed');
+        }
+      });
+    }
+
+    // Toggle Teacher's Tip Box
+    function toggleTip(tipId) {
+      const tip = document.getElementById(tipId);
+      const icon = document.getElementById(tipId + '-icon');
+      if (tip) {
+        if (tip.style.display === 'none') {
+          tip.style.display = 'block';
+          if (icon) icon.textContent = '[Ẩn]';
+        } else {
+          tip.style.display = 'none';
+          if (icon) icon.textContent = '[Hiện]';
+        }
+      }
+    }
+
+    // Mini-Quiz Interactive Check
+    function checkAnswer(quizBoxId, optionIndex, isCorrect, explanation) {
+      const quizBox = document.getElementById(quizBoxId);
+      if (!quizBox) return;
+
+      const options = quizBox.querySelectorAll('.quiz-opt');
+      const feedback = document.getElementById('feedback-' + quizBoxId);
+
+      // Disable buttons or highlight selected
+      options.forEach((opt, idx) => {
+        opt.classList.remove('correct', 'incorrect');
+        if (idx === optionIndex) {
+          if (isCorrect) {
+            opt.classList.add('correct');
+          } else {
+            opt.classList.add('incorrect');
+          }
+        }
+      });
+
+      if (feedback) {
+        feedback.innerHTML = (isCorrect ? '✅ <strong>Đúng rồi!</strong> ' : '❌ <strong>Chưa chính xác:</strong> ') + explanation;
+        feedback.className = 'quiz-feedback show';
+        if (window.MathJax && window.MathJax.typesetPromise) {
+          window.MathJax.typesetPromise([feedback]);
+        }
+      }
+    }
+
+    // Initial button state
+    goToPage(1);
+  </script>
 </body>
 </html>
